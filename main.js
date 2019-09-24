@@ -18,19 +18,37 @@ const keys = {
 const setting = {
     start: false,
     score: 0,
-    speed: 3
+    speed: 3,
+    traffic: 2
 };
+
+function getQuanityElements(heightElement){
+    return document.documentElement.clientHeight / heightElement + 1;
+}
+
+//console.log(getQuanityElemts(200));
 
 function startGame(){
     start.classList.add('hide');
 
-    for (let i = 0; i < 20; i++){
+    for (let i = 0; i < getQuanityElements(100); i++){
         const line = document.createElement('div');
         line.classList.add('line');
         line.style.top = (i * 100) + 'px';
         line.y = i * 100;
         gameArea.appendChild(line);
     }
+
+    for (let i = 0; i < getQuanityElements(100 * setting.traffic); i++) {
+        const enemy = document.createElement('div');
+        enemy.classList.add('enemy');  
+        enemy.y = -100 * setting.traffic * (i + 1);   
+        enemy.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px'; 
+        enemy.style.top = (i * 100) + 'px';
+        enemy.style.background = 'transparent url(./image/2.png) center / cover no-repeat';
+        gameArea.appendChild(enemy);  
+    }
+
     setting.start = true;
     gameArea.appendChild(car);
     setting.x = car.offsetLeft;
@@ -41,6 +59,7 @@ function startGame(){
 function playGame(){
     console.log('Play GAME!');
     moveRoad();
+    moveEnemy();
     if(setting.start){
         if(keys.ArrowLeft && setting.x > 0){
             setting.x -= setting.speed;
@@ -81,4 +100,17 @@ function moveRoad() {
             line.y = -100;
         }
     })
+}
+
+function moveEnemy(){
+    let enemy = document.querySelectorAll('.enemy');
+    enemy.forEach(function(item){
+        item.y += setting.speed / 2;
+        item.style.top = item.y + 'px';
+        
+    if(item.y >= document.documentElement.clientHeight){
+        item.y = -100 * setting.traffic;
+        item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
+    }
+    });
 }
