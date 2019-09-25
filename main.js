@@ -18,7 +18,7 @@ const keys = { // задаём первоначальные значения к�
 const setting = { // задаём первоначальные показатели
     start: false,
     score: 0,
-    speed: 3,
+    speed: 10,
     traffic: 1.5
 };
 
@@ -28,6 +28,7 @@ function getQuanityElements(heightElement){ // для бесконечного �
 
 function startGame(){ // главная функция
     start.classList.add('hide'); // кнопка начала игры
+    gameArea.innerHTML = '';
 
     for (let i = 0; i < getQuanityElements(100); i++){ // создаём линии на дороге
         const line = document.createElement('div');
@@ -48,14 +49,20 @@ function startGame(){ // главная функция
         gameArea.appendChild(enemy); 
     }
 
+    setting.score = 0;
     setting.start = true;  
     gameArea.appendChild(car); // создаём нашу машинку
+    car.style.left = gameArea.offsetWidth / 2 - car.offsetWidth / 2;
+    car.style.top = 'auto';
+    car.style.bottom = '10px';
     setting.x = car.offsetLeft; // функция управления машинкой
     setting.y = car.offsetTop;
     requestAnimationFrame(playGame);
 }
 
 function playGame(){  // генерируем дорогу, второстепенные машинки и начинаем игру
+    setting.score += setting.speed;
+    score.textContent = 'SCORE: ' + setting.score;
     moveRoad();
     moveEnemy();
     if(setting.start){
@@ -108,7 +115,18 @@ function moveRoad() { // бесконечное движение дороги
 
 function moveEnemy(){ // бесконечное движение второстепенных машинок
     let enemy = document.querySelectorAll('.enemy');
+
     enemy.forEach(function(item){
+        let carRect = car.getBoundingClientRect();
+        let enemyRect = item.getBoundingClientRect();
+
+        if (carRect.top <= enemyRect.bottom && carRect.right >= enemyRect.left
+            && carRect.left <= enemyRect.right && carRect.bottom >= enemyRect.top) {
+            
+            setting.start = false;
+            console.warn('ДТП');
+            start.classList.remove('hide');
+        }
         item.y += setting.speed / 2;
         item.style.top = item.y + 'px';
         
