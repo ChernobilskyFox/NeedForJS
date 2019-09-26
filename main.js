@@ -2,6 +2,9 @@ const score = document.querySelector('.score'), // создаём объекты
     start = document.querySelector('.start'),
     gameArea = document.querySelector('.gameArea'),
     car = document.createElement('div');
+    music = document.createElement('audio');
+    music.classList.add('music');
+
 car.classList.add('car');
 
 start.addEventListener('click', startGame);
@@ -19,7 +22,7 @@ const setting = { // задаём первоначальные показате�
     start: false,
     score: 0,
     speed: 10,
-    traffic: 1.5
+    traffic: 2
 };
 
 function getQuanityElements(heightElement){ // для бесконечного появления элементов
@@ -52,6 +55,10 @@ function startGame(){ // главная функция
     setting.score = 0;
     setting.start = true;  
     gameArea.appendChild(car); // создаём нашу машинку
+    music.setAttribute('autoplay', true); // добавили фоновую музыку
+    music.setAttribute('src', './mus.mp3');
+    gameArea.appendChild(music);
+    music.setAttribute('controls', true);
     car.style.left = gameArea.offsetWidth / 2 - car.offsetWidth / 2;
     car.style.top = 'auto';
     car.style.bottom = '10px';
@@ -63,6 +70,7 @@ function startGame(){ // главная функция
 function playGame(){  // генерируем дорогу, второстепенные машинки и начинаем игру
     setting.score += setting.speed;
     score.textContent = 'SCORE: ' + setting.score;
+        
     moveRoad();
     moveEnemy();
     if(setting.start){
@@ -83,6 +91,10 @@ function playGame(){  // генерируем дорогу, второстепе
         car.style.top = setting.y +'px';
 
         requestAnimationFrame(playGame);
+    }
+
+    else {
+        music.remove();
     }
 } 
 
@@ -107,7 +119,7 @@ function moveRoad() { // бесконечное движение дороги
     lines.forEach(function(line){
         line.y += setting.speed;
         line.style.top = line.y +'px';
-        if(line.y >= document.documentElement.clientHeight){
+        if(line.y >= gameArea.offsetHeight){
             line.y = -100;
         }
     })
@@ -130,7 +142,7 @@ function moveEnemy(){ // бесконечное движение второст�
         item.y += setting.speed / 2;
         item.style.top = item.y + 'px';
         
-        if(item.y >= document.documentElement.clientHeight){
+        if(item.y >= gameArea.offsetHeight){ 
         item.y = -150 * setting.traffic;
         item.style.left = Math.floor(Math.random() * (gameArea.offsetWidth - 50)) + 'px';
         }
